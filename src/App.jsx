@@ -1,11 +1,13 @@
-import { useState, useMemo,useEffect } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import axios from 'axios';
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import { RecoilRoot, useRecoilValue ,useRecoilState} from 'recoil'
+import { RecoilRoot, useRecoilValue, useRecoilState } from 'recoil'
 //import { jobsAtom, messagingAtom, networkAtom, notificationAtom, totalNotificationSelector } from './assets/atom'
-import { totalNotificationSelector ,notificationsAtom} from './assets/atom'
+import { totalNotificationSelector, notificationsAtom } from './assets/atom'
+import Alert from '@mui/material/Alert';
+
 
 function App() {
   return <RecoilRoot>
@@ -92,11 +94,15 @@ function MainApp() {
   // )
 
   //using AXIOS
-
+   // Use Recoil's selector to handle the fetching logic
   const totalNotificationCount = useRecoilValue(totalNotificationSelector);
-  console.log(totalNotificationCount)
+  //console.log(totalNotificationCount)
+  // notificationsAtom is handled by the selector
+  const networkCount = useRecoilValue(notificationsAtom);
+  //const [networkCount, setNetworkCount] = useRecoilState(notificationsAtom);
 
-   const [networkCount, setNetworkCount] = useRecoilState(notificationsAtom);
+  // Check if there's a message from the server
+  const serverMessage = networkCount.message;
 
   //adding this useEffect increases load time and give flash of initial data and then load the data.So we can use selector at atom where we are initializing data for network, jobs,messaging, notifications .
   // useEffect(() => {
@@ -110,20 +116,31 @@ function MainApp() {
   //       console.error("Error fetching notifications:", error);
   //     });
   // }, [setNetworkCount]);
-  
+
 
   return (
-    <>
-      <button>Home</button>
-      
-      <button>My network ({networkCount.networks >= 100 ? "99+" : networkCount.networks})</button>
-      <button>Jobs {networkCount.jobs}</button>
-      <button>Messaging ({networkCount.messaging})</button>
-      <button>Notifications ({networkCount.notifications})</button>
+    <div className="App">
+      {serverMessage ? (
+        <Alert severity="error">
+          {serverMessage}
+        </Alert>
+      ) : (
+        <>
+          <button>Home</button>
 
-      <button>Me ({totalNotificationCount})</button>
-    </>
-  )
+          {/* <button>My network ({networkCount.networks >= 100 ? "99+" : networkCount.networks})</button> */}
+          <button>
+          My network ({getNotificationCount(networkCount.networks)})
+          </button>
+          <button>Jobs ({getNotificationCount(networkCount.jobs)})</button>
+          <button>Messaging ({getNotificationCount(networkCount.messaging)})</button>
+          <button>Notifications ({getNotificationCount(networkCount.notifications)})</button>
+
+          <button>Me ({totalNotificationCount})</button>
+        </>
+      )
+      } </div>
+  );
 }
 
 export default App;

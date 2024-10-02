@@ -11,7 +11,7 @@ app.use(cors());
 // Function to generate random data in the range of 10 to 110
 function generateRandomData() {
     const min = 0;
-    const max = 150;
+    const max = 250;
     
     return {
         networks: Math.floor(Math.random() * (max - min + 1)) + min,  // random value between 10 and 110
